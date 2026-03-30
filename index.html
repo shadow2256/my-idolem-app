@@ -477,7 +477,24 @@ kbd {
 
 </div>
 
-<script>
+<script type="module">
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
+import { getDatabase, ref, onValue, update } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js';
+
+const firebaseConfig = {
+  apiKey: "AIzaSyC_YnHVfnpHHByFfE5IIo4pjD_j8Zs_JfI",
+  authDomain: "idolem-app.firebaseapp.com",
+  projectId: "idolem-app",
+  storageBucket: "idolem-app.firebasestorage.app",
+  messagingSenderId: "731773296854",
+  appId: "1:731773296854:web:3c74efdc010f76c5132977",
+  databaseURL: "https://idolem-app-default-rtdb.firebaseio.com"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
+const tasksRef = ref(db, 'tasks');
+
 const state = { filter:'all', search:'', collapsed:new Set() };
 
 const SECTIONS = [
@@ -601,7 +618,7 @@ function updateCounts() {
 
 document.getElementById('task-container').addEventListener('click', e => {
   const check = e.target.closest('[data-cid]');
-  if (check) { e.stopPropagation(); const id=+check.dataset.cid; allTasks().forEach(t=>{if(t.id===id)t.done=!t.done;}); persist(); render(); return; }
+  if (check) { e.stopPropagation(); const id=+check.dataset.cid; const task=allTasks().find(t=>t.id===id); if(task){ task.done=!task.done; update(tasksRef,{[id]:task.done}); render(); } return; }
   const sh = e.target.closest('.section-header');
   if (sh) { const sid=sh.dataset.sid; state.collapsed.has(sid)?state.collapsed.delete(sid):state.collapsed.add(sid); render(); return; }
   const task = e.target.closest('.task');
@@ -645,10 +662,12 @@ window.addEventListener('scroll', () => {
   document.getElementById('scrollProgress').style.width=pct+'%';
 }, {passive:true});
 
-function persist() { const s={}; allTasks().forEach(t=>{s[t.id]=t.done;}); try{localStorage.setItem('idolem_tasks_v3',JSON.stringify(s));}catch(e){} }
-function hydrate() { try{const s=JSON.parse(localStorage.getItem('idolem_tasks_v3')); if(s) allTasks().forEach(t=>{if(s[t.id]!==undefined)t.done=s[t.id];});}catch(e){} }
-
-hydrate(); render();
+// Sync from Firebase in real-time — all visitors share the same state
+onValue(tasksRef, (snapshot) => {
+  const data = snapshot.val() || {};
+  allTasks().forEach(t => { if (data[t.id] !== undefined) t.done = data[t.id]; });
+  render();
+});
 </script>
 </body>
 </html>
