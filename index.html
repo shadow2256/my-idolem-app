@@ -1,0 +1,654 @@
+<!DOCTYPE html>
+<html lang="fr" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>IMAGINE × IDOLEM — Centre de commande</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+/* ═══════ TOKENS ═══════ */
+:root, [data-theme="dark"] {
+  --bg:#0A0907; --card:#121110; --card-hover:#1A1815;
+  --border:rgba(215,164,97,.15); --border-strong:rgba(215,164,97,.3);
+  --text:#E8E2D8; --text-strong:#FFFFFF; --muted:#8A8279;
+  --gold:#D7A461; --gold-dim:rgba(215,164,97,.6); --gold-glow:rgba(215,164,97,.08);
+  --brown:#30261D; --brown-light:#3D3128;
+  --urgent:#C45A4A; --urgent-bg:rgba(196,90,74,.12);
+  --success:#6B9A5B; --success-bg:rgba(107,154,91,.12);
+  --blue:#6B8EBF; --blue-bg:rgba(107,142,191,.12);
+  --purple:#9A85C4; --purple-bg:rgba(154,133,196,.12);
+  --pink:#BF7B95; --pink-bg:rgba(191,123,149,.12);
+  --shadow:0 2px 12px rgba(0,0,0,.4);
+  --glow-opacity:.06; --lotus-opacity:.15;
+  --check-done-text:#0A0907; --filter-active-text:#0A0907;
+  --tag-border-alpha:.15; --tag-bg-alpha:.1;
+  --input-bg:rgba(255,255,255,.04);
+}
+[data-theme="light"] {
+  --bg:#FFFDF8; --card:#FFFFFF; --card-hover:#FBF8F2;
+  --border:rgba(48,38,29,.12); --border-strong:rgba(48,38,29,.22);
+  --text:#3D3128; --text-strong:#1A1510; --muted:#8A7E72;
+  --gold:#B8863E; --gold-dim:rgba(184,134,62,.65); --gold-glow:rgba(184,134,62,.07);
+  --brown:#F5F0E8; --brown-light:#EDE7DC;
+  --urgent:#B94A3A; --urgent-bg:rgba(185,74,58,.08);
+  --success:#578A47; --success-bg:rgba(87,138,71,.08);
+  --blue:#4A7AAF; --blue-bg:rgba(74,122,175,.08);
+  --purple:#7B6AAF; --purple-bg:rgba(123,106,175,.08);
+  --pink:#A8607A; --pink-bg:rgba(168,96,122,.08);
+  --shadow:0 1px 4px rgba(48,38,29,.06),0 4px 16px rgba(48,38,29,.04);
+  --glow-opacity:0; --lotus-opacity:.2;
+  --check-done-text:#FFFFFF; --filter-active-text:#FFFDF8;
+  --tag-border-alpha:.12; --tag-bg-alpha:.06;
+  --input-bg:rgba(0,0,0,.03);
+}
+
+/* ═══════ ANIMATIONS ═══════ */
+@keyframes fadeSlideIn {
+  from { opacity:0; transform:translateY(14px); }
+  to   { opacity:1; transform:translateY(0); }
+}
+@keyframes checkPop {
+  0%  { transform:scale(1); }
+  40% { transform:scale(1.4); }
+  70% { transform:scale(.88); }
+  100%{ transform:scale(1); }
+}
+@keyframes progressReveal { from { width:0; } }
+
+/* ═══════ BASE ═══════ */
+html { scroll-behavior:smooth; }
+body {
+  font-family:'Instrument Sans',system-ui,sans-serif;
+  background:var(--bg); color:var(--text);
+  line-height:1.6; -webkit-font-smoothing:antialiased;
+  min-height:100vh; transition:background .4s,color .4s;
+}
+body::before {
+  content:''; position:fixed; top:0; left:0; right:0; height:400px;
+  background:radial-gradient(ellipse at 50% 0%,rgba(215,164,97,var(--glow-opacity)) 0%,transparent 70%);
+  pointer-events:none; z-index:0;
+}
+:focus-visible { outline:2px solid var(--gold); outline-offset:2px; border-radius:4px; }
+
+/* ─── Scroll progress ─── */
+.scroll-progress {
+  position:fixed; top:0; left:0; height:2px;
+  background:linear-gradient(90deg,var(--gold),#E8C98A);
+  z-index:9999; width:0%; transition:width .1s linear;
+  pointer-events:none;
+}
+
+.container { max-width:1120px; margin:0 auto; padding:2.5rem 1.5rem 4rem; position:relative; z-index:1; }
+
+/* ─── Header ─── */
+.header {
+  display:flex; align-items:flex-end; justify-content:space-between;
+  gap:1rem; margin-bottom:3rem; padding-bottom:1.5rem;
+  border-bottom:1px solid var(--border); flex-wrap:wrap;
+  transition:border-color .4s; animation:fadeSlideIn .5s ease both;
+}
+.logo-text {
+  font-family:'Cormorant Garamond',Georgia,serif; font-size:2rem;
+  font-weight:300; letter-spacing:.35em; color:var(--text-strong);
+  text-transform:uppercase; line-height:1.2; transition:color .4s;
+}
+.logo-text span { color:var(--gold); }
+.logo-sub { font-size:.68rem; letter-spacing:.25em; text-transform:uppercase; color:var(--muted); margin-top:6px; }
+.header-right { display:flex; flex-direction:column; align-items:flex-end; gap:10px; }
+.header-meta { font-size:.72rem; color:var(--muted); text-align:right; line-height:1.6; letter-spacing:.04em; }
+.header-meta strong { color:var(--gold); font-weight:500; }
+
+/* ─── Theme toggle ─── */
+.theme-toggle {
+  width:52px; height:28px; border-radius:14px;
+  background:rgba(215,164,97,.12); border:1px solid var(--border);
+  cursor:pointer; position:relative; transition:all .35s; flex-shrink:0;
+}
+[data-theme="light"] .theme-toggle { background:rgba(48,38,29,.06); }
+.theme-toggle:hover { border-color:var(--border-strong); }
+.toggle-thumb {
+  position:absolute; top:3px; width:20px; height:20px; border-radius:50%;
+  background:var(--gold); display:flex; align-items:center; justify-content:center;
+  transition:left .35s cubic-bezier(.34,1.56,.64,1);
+}
+[data-theme="dark"]  .toggle-thumb { left:3px; }
+[data-theme="light"] .toggle-thumb { left:27px; }
+.toggle-thumb svg { width:12px; height:12px; }
+[data-theme="dark"]  .icon-sun  { display:none; }
+[data-theme="dark"]  .icon-moon { display:block; }
+[data-theme="light"] .icon-sun  { display:block; }
+[data-theme="light"] .icon-moon { display:none; }
+
+/* ─── TL;DR ─── */
+.tldr {
+  background:var(--card); border:1px solid var(--border); border-radius:16px;
+  padding:2rem 2.25rem; margin-bottom:2.5rem; box-shadow:var(--shadow);
+  position:relative; overflow:hidden; transition:all .4s;
+  animation:fadeSlideIn .5s .08s ease both;
+}
+.tldr::before {
+  content:''; position:absolute; top:0; left:0; right:0; height:1px;
+  background:linear-gradient(90deg,transparent,var(--gold),transparent);
+}
+.tldr-title {
+  font-family:'Cormorant Garamond',Georgia,serif; font-size:.85rem;
+  font-weight:400; letter-spacing:.2em; text-transform:uppercase;
+  color:var(--gold); margin-bottom:1rem;
+}
+.tldr p { font-size:.88rem; color:var(--text); line-height:1.8; opacity:.9; }
+.tldr p+p { margin-top:.65rem; }
+.tldr strong { color:var(--gold); font-weight:500; }
+
+/* ─── Contract cards ─── */
+.contract-bar {
+  display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+  gap:14px; margin-bottom:2.5rem; animation:fadeSlideIn .5s .14s ease both;
+}
+.bloc-card {
+  background:var(--card); border:1px solid var(--border); border-radius:14px;
+  padding:1.25rem 1.5rem; box-shadow:var(--shadow); position:relative;
+  overflow:hidden; transition:all .3s;
+}
+.bloc-card:hover { border-color:var(--border-strong); transform:translateY(-2px); box-shadow:var(--shadow),0 8px 24px rgba(0,0,0,.18); }
+.bloc-card::before { content:''; position:absolute; top:0; left:0; right:0; height:2px; }
+.bloc-card.done::before    { background:var(--success); }
+.bloc-card.active::before  { background:var(--gold); }
+.bloc-card.pending::before { background:var(--muted); opacity:.3; }
+.bloc-card.retainer::before{ background:var(--blue); }
+.bloc-label { font-size:.6rem; font-weight:600; text-transform:uppercase; letter-spacing:.12em; margin-bottom:.35rem; }
+.bloc-card.done .bloc-label    { color:var(--success); }
+.bloc-card.active .bloc-label  { color:var(--gold); }
+.bloc-card.pending .bloc-label { color:var(--muted); }
+.bloc-card.retainer .bloc-label{ color:var(--blue); }
+.bloc-title { font-size:.82rem; font-weight:400; margin-bottom:.35rem; color:var(--text); opacity:.85; }
+.bloc-price { font-family:'Cormorant Garamond',Georgia,serif; font-size:1.25rem; font-weight:400; letter-spacing:.02em; color:var(--text-strong); }
+.bloc-status {
+  display:inline-block; font-size:.6rem; font-weight:600; padding:3px 10px;
+  border-radius:20px; margin-top:.6rem; letter-spacing:.04em; text-transform:uppercase;
+}
+.bloc-card.done .bloc-status    { background:var(--success-bg); color:var(--success); }
+.bloc-card.active .bloc-status  { background:var(--gold-glow); color:var(--gold); border:1px solid rgba(215,164,97,.2); }
+.bloc-card.pending .bloc-status { background:rgba(138,130,121,.08); color:var(--muted); }
+.bloc-card.retainer .bloc-status{ background:var(--blue-bg); color:var(--blue); }
+
+/* ─── KPIs ─── */
+.kpi-row {
+  display:grid; grid-template-columns:repeat(auto-fit,minmax(130px,1fr));
+  gap:12px; margin-bottom:2.5rem; animation:fadeSlideIn .5s .2s ease both;
+}
+.kpi {
+  background:var(--card); border:1px solid var(--border); border-radius:12px;
+  padding:1rem; text-align:center; box-shadow:var(--shadow); transition:all .3s;
+}
+.kpi:hover { border-color:var(--border-strong); transform:translateY(-1px); }
+.kpi-value { font-family:'Cormorant Garamond',Georgia,serif; font-size:1.5rem; font-weight:400; color:var(--gold); }
+.kpi-label { font-size:.65rem; color:var(--muted); margin-top:4px; font-weight:500; letter-spacing:.04em; text-transform:uppercase; }
+
+/* ─── Progress ─── */
+.progress-wrap { margin-bottom:2.5rem; animation:fadeSlideIn .5s .24s ease both; }
+.progress-label { display:flex; justify-content:space-between; font-size:.72rem; color:var(--muted); margin-bottom:8px; letter-spacing:.04em; text-transform:uppercase; }
+.progress-label span:last-child { color:var(--gold); font-weight:500; }
+.progress-bar { height:4px; background:var(--brown); border-radius:2px; overflow:hidden; }
+.progress-fill {
+  height:100%; border-radius:2px;
+  background:linear-gradient(90deg,var(--gold),#E8C98A);
+  transition:width .6s cubic-bezier(.4,0,.2,1);
+  animation:progressReveal .8s .5s ease both;
+}
+
+/* ─── Lotus ─── */
+.lotus { text-align:center; margin:1rem 0 2rem; opacity:var(--lotus-opacity); }
+.lotus svg { width:40px; height:40px; }
+
+/* ─── Search ─── */
+.search-wrap { position:relative; margin-bottom:1rem; animation:fadeSlideIn .5s .28s ease both; }
+.search-icon {
+  position:absolute; left:14px; top:50%; transform:translateY(-50%);
+  color:var(--muted); pointer-events:none; width:16px; height:16px;
+  transition:color .25s;
+}
+.search-wrap:focus-within .search-icon { color:var(--gold); }
+.search-input {
+  width:100%; padding:10px 38px 10px 40px;
+  background:var(--input-bg); border:1px solid var(--border);
+  border-radius:12px; color:var(--text);
+  font-family:'Instrument Sans',system-ui,sans-serif; font-size:.82rem;
+  outline:none; transition:all .25s;
+}
+.search-input::placeholder { color:var(--muted); opacity:.65; }
+.search-input:focus { border-color:var(--gold); background:var(--card); box-shadow:0 0 0 3px var(--gold-glow); }
+.search-clear {
+  position:absolute; right:10px; top:50%; transform:translateY(-50%);
+  background:none; border:none; color:var(--muted); cursor:pointer;
+  font-size:1.1rem; padding:4px 6px; border-radius:6px;
+  display:none; transition:color .2s; line-height:1;
+}
+.search-clear:hover { color:var(--gold); }
+.search-clear.visible { display:block; }
+
+/* ─── Filters ─── */
+.filters { display:flex; gap:6px; margin-bottom:.75rem; flex-wrap:wrap; animation:fadeSlideIn .5s .32s ease both; }
+.filter-btn {
+  font-family:'Instrument Sans',system-ui,sans-serif; font-size:.72rem;
+  font-weight:500; padding:7px 14px; border-radius:24px;
+  border:1px solid var(--border); background:transparent; color:var(--muted);
+  cursor:pointer; transition:all .25s; letter-spacing:.03em;
+  display:flex; align-items:center; gap:6px;
+}
+.filter-btn:hover { border-color:var(--gold-dim); color:var(--gold-dim); }
+.filter-btn.active { background:var(--gold); color:var(--filter-active-text); border-color:var(--gold); font-weight:600; }
+.filter-count {
+  font-size:.6rem; font-weight:700; background:var(--brown-light); color:var(--muted);
+  padding:1px 6px; border-radius:10px; min-width:18px; text-align:center; transition:all .25s;
+}
+.filter-btn.active .filter-count { background:rgba(0,0,0,.15); color:var(--filter-active-text); }
+
+/* ─── Keyboard hints ─── */
+.kbd-hints {
+  display:flex; gap:14px; justify-content:flex-end; flex-wrap:wrap;
+  margin-bottom:1.75rem; animation:fadeSlideIn .5s .36s ease both;
+}
+.kbd-item { display:flex; align-items:center; gap:5px; font-size:.62rem; color:var(--muted); opacity:.55; }
+kbd {
+  display:inline-flex; align-items:center; justify-content:center;
+  min-width:20px; height:18px; padding:0 5px;
+  border:1px solid var(--border); border-radius:4px;
+  font-family:inherit; font-size:.6rem; color:var(--muted);
+  background:var(--brown); line-height:1;
+}
+
+/* ─── Sections ─── */
+.section { margin-bottom:2.25rem; }
+.section-header {
+  display:flex; align-items:center; gap:10px;
+  margin-bottom:1rem; padding-bottom:.5rem;
+  cursor:pointer; user-select:none;
+}
+.section-header:hover .section-title { color:var(--gold); }
+.section-dot {
+  width:8px; height:8px; border-radius:50%; flex-shrink:0;
+  box-shadow:0 0 8px currentColor; transition:transform .25s;
+}
+.section-header:hover .section-dot { transform:scale(1.35); }
+.section-title {
+  font-family:'Cormorant Garamond',Georgia,serif; font-size:1.05rem;
+  font-weight:400; letter-spacing:.08em; color:var(--text-strong);
+  flex:1; transition:color .25s;
+}
+.section-mini-progress { width:56px; height:3px; background:var(--brown); border-radius:2px; overflow:hidden; flex-shrink:0; }
+.section-mini-fill { height:100%; border-radius:2px; transition:width .4s ease; }
+.section-count {
+  font-size:.62rem; color:var(--muted); background:var(--brown);
+  padding:3px 10px; border-radius:12px; font-weight:600; letter-spacing:.04em;
+}
+.section-chevron { color:var(--muted); font-size:.65rem; flex-shrink:0; transition:transform .25s; opacity:.6; }
+.section.collapsed .section-chevron { transform:rotate(-90deg); }
+.section.collapsed .task-list { display:none; }
+
+/* ─── Tasks ─── */
+.task-list { display:flex; flex-direction:column; gap:8px; }
+.task {
+  background:var(--card); border:1px solid var(--border); border-radius:12px;
+  padding:1.1rem 1.4rem; box-shadow:var(--shadow); cursor:pointer;
+  transition:border-color .25s,background .25s,opacity .35s;
+  position:relative; overflow:hidden;
+  animation:fadeSlideIn .35s ease both;
+}
+.task::before {
+  content:''; position:absolute; top:0; left:0; bottom:0; width:2px;
+  background:var(--gold); opacity:0; transition:opacity .25s;
+}
+.task:hover { border-color:var(--border-strong); background:var(--card-hover); }
+.task:hover::before { opacity:1; }
+.task.completed { opacity:.4; }
+.task.completed .task-title { text-decoration:line-through; text-decoration-color:var(--muted); }
+.task-top { display:flex; align-items:flex-start; justify-content:space-between; gap:14px; }
+
+.task-check {
+  width:20px; height:20px; border-radius:50%;
+  border:1.5px solid var(--border-strong); flex-shrink:0; cursor:pointer;
+  transition:background .2s,border-color .2s; display:flex;
+  align-items:center; justify-content:center; margin-top:1px;
+}
+.task-check:hover { border-color:var(--gold); background:var(--gold-glow); }
+.task-check.checked { background:var(--gold); border-color:var(--gold); animation:checkPop .35s ease; }
+.check-icon { opacity:0; transition:opacity .15s; pointer-events:none; }
+.task-check.checked .check-icon { opacity:1; }
+
+.task-info { flex:1; min-width:0; }
+.task-title { font-size:.85rem; font-weight:500; line-height:1.45; color:var(--text-strong); transition:color .25s; }
+.task-desc { font-size:.78rem; color:var(--muted); margin-top:6px; line-height:1.65; display:none; }
+.task.expanded .task-desc { display:block; }
+.task-tags { display:flex; gap:5px; flex-wrap:wrap; margin-top:10px; }
+.tag { font-size:.58rem; font-weight:600; padding:3px 9px; border-radius:12px; text-transform:uppercase; letter-spacing:.06em; }
+.tag-urgent  { background:var(--urgent-bg);  color:var(--urgent);  border:1px solid rgba(196,90,74,var(--tag-border-alpha)); }
+.tag-bloc2   { background:var(--gold-glow);  color:var(--gold);    border:1px solid rgba(215,164,97,var(--tag-border-alpha)); }
+.tag-bloc3   { background:var(--purple-bg);  color:var(--purple);  border:1px solid rgba(154,133,196,var(--tag-border-alpha)); }
+.tag-ads     { background:var(--blue-bg);    color:var(--blue);    border:1px solid rgba(107,142,191,var(--tag-border-alpha)); }
+.tag-ai      { background:var(--success-bg); color:var(--success); border:1px solid rgba(107,154,91,var(--tag-border-alpha)); }
+.tag-ghl     { background:rgba(215,164,97,.06); color:var(--gold-dim); border:1px solid rgba(215,164,97,.1); }
+.tag-new     { background:var(--pink-bg);    color:var(--pink);    border:1px solid rgba(191,123,149,var(--tag-border-alpha)); }
+.tag-retainer{ background:rgba(138,130,121,var(--tag-bg-alpha)); color:var(--muted); border:1px solid rgba(138,130,121,var(--tag-border-alpha)); }
+
+.task-arrow { color:var(--muted); font-size:.65rem; flex-shrink:0; transition:all .25s; margin-top:3px; opacity:.5; }
+.task:hover .task-arrow { opacity:1; color:var(--gold); }
+.task.expanded .task-arrow { transform:rotate(90deg); color:var(--gold); opacity:1; }
+
+/* ─── Empty state ─── */
+.empty-state { text-align:center; padding:4rem 2rem; animation:fadeSlideIn .35s ease both; }
+.empty-icon { font-size:2.5rem; opacity:.2; margin-bottom:1rem; }
+.empty-state p { color:var(--muted); font-size:.85rem; }
+.empty-state strong { color:var(--gold); }
+
+/* ─── Footer ─── */
+.footer { text-align:center; padding-top:2rem; border-top:1px solid var(--border); margin-top:1rem; transition:border-color .4s; }
+.footer p { font-size:.68rem; color:var(--muted); letter-spacing:.1em; text-transform:uppercase; }
+.footer p span { color:var(--gold); }
+
+/* ─── Responsive ─── */
+@media (max-width:640px) {
+  .container { padding:1.5rem 1rem 3rem; }
+  .logo-text { font-size:1.4rem; letter-spacing:.2em; }
+  .contract-bar { grid-template-columns:1fr 1fr; }
+  .kpi-row { grid-template-columns:1fr 1fr; }
+  .tldr { padding:1.5rem; }
+  .header-right { flex-direction:row; align-items:center; gap:12px; }
+  .kbd-hints { display:none; }
+}
+</style>
+</head>
+<body>
+
+<div class="scroll-progress" id="scrollProgress"></div>
+
+<div class="container">
+
+  <header class="header">
+    <div>
+      <div class="logo-text">Imagine <span>×</span> Idolem</div>
+      <div class="logo-sub">Centre de commande — Post-réunion 27 mars 2026</div>
+    </div>
+    <div class="header-right">
+      <button class="theme-toggle" id="themeToggle" aria-label="Changer de thème" title="Thème (T)">
+        <div class="toggle-thumb">
+          <svg class="icon-moon" viewBox="0 0 20 20" fill="none"><path d="M17.4 13.3A8 8 0 0 1 6.7 2.6a8 8 0 1 0 10.7 10.7Z" fill="#0A0907"/></svg>
+          <svg class="icon-sun"  viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="3.5" fill="#FFFDF8"/><g stroke="#FFFDF8" stroke-width="1.2" stroke-linecap="round"><line x1="10" y1="1.5" x2="10" y2="3.5"/><line x1="10" y1="16.5" x2="10" y2="18.5"/><line x1="1.5" y1="10" x2="3.5" y2="10"/><line x1="16.5" y1="10" x2="18.5" y2="10"/><line x1="3.99" y1="3.99" x2="5.4" y2="5.4"/><line x1="14.6" y1="14.6" x2="16.01" y2="16.01"/><line x1="3.99" y1="16.01" x2="5.4" y2="14.6"/><line x1="14.6" y1="5.4" x2="16.01" y2="3.99"/></g></svg>
+        </div>
+      </button>
+      <div class="header-meta"><strong>Youssef Atrassi</strong><br>Imagine Agency</div>
+    </div>
+  </header>
+
+  <div class="tldr">
+    <div class="tldr-title">Résumé exécutif</div>
+    <p><strong>La priorité #1 de Melody a changé :</strong> les outils internes pour les franchisés passent avant l'acquisition de clients. Les franchisés sont frustrés, ne trouvent pas l'info, et un groupe Messenger toxique cause des escalades. Elle a besoin d'un chatbot sur l'intranet, d'une plateforme de communication Google avec vote et modération, et d'un podcast NotebookLM — le tout en urgence.</p>
+    <p><strong>Livrables de la fin de semaine :</strong> Génération du catalogue vêtements (PowerPoint → catalogue brandé avec photos de Melody, coefficient prix ×2.00475), recherche chatbot dans l'écosystème Google, et architecture de la plateforme franchisés.</p>
+    <p><strong>Nouvelles opportunités débloquées :</strong> API B-Sport → dashboard BI personnalisé (remplace l'embauche Power BI), connexion API Brevo, clones IA (ElevenLabs déjà prêt), « Claudette » designer IA sur WhatsApp, et éventuellement une boutique en ligne interne pour les commandes de vêtements.</p>
+    <p><strong>Les pubs performent très bien :</strong> 294 leads, 5–8$/lead en moyenne, la meilleure pub a généré 80% des leads. Campagne formation virtuelle prête à lancer après validation. Tournage le 11 avril — envoyer scripts et recherches avant.</p>
+  </div>
+
+  <div class="contract-bar">
+    <div class="bloc-card done">
+      <div class="bloc-label">Bloc 1 — Funnels + Ads + IA vidéo</div>
+      <div class="bloc-title">Funnels, Meta Ads, Clone IA</div>
+      <div class="bloc-price">19 000 $</div>
+      <div class="bloc-status">Complété</div>
+    </div>
+    <div class="bloc-card active">
+      <div class="bloc-label">Bloc 2 — Chatbot + Machine à leads</div>
+      <div class="bloc-title">Chatbot IA, CRM, Pipelines</div>
+      <div class="bloc-price">15 000 $</div>
+      <div class="bloc-status">En cours</div>
+    </div>
+    <div class="bloc-card pending">
+      <div class="bloc-label">Bloc 3 — Intranet IA + Voice AI</div>
+      <div class="bloc-title">Reco faciale, Knowledge Hub</div>
+      <div class="bloc-price">15 000 $</div>
+      <div class="bloc-status">Optionnel</div>
+    </div>
+    <div class="bloc-card retainer">
+      <div class="bloc-label">Retainer mensuel</div>
+      <div class="bloc-title">Ads, Funnels, Support IA</div>
+      <div class="bloc-price">3 000 $/mois</div>
+      <div class="bloc-status">Actif</div>
+    </div>
+  </div>
+
+  <div class="kpi-row">
+    <div class="kpi"><div class="kpi-value">294</div><div class="kpi-label">Leads totaux</div></div>
+    <div class="kpi"><div class="kpi-value">5–8 $</div><div class="kpi-label">Coût / lead</div></div>
+    <div class="kpi"><div class="kpi-value">80 %</div><div class="kpi-label">Top pub</div></div>
+    <div class="kpi"><div class="kpi-value">30–40 %</div><div class="kpi-label">Ouverture Brevo</div></div>
+    <div class="kpi"><div class="kpi-value">1M</div><div class="kpi-label">Courriels / mois</div></div>
+  </div>
+
+  <div class="progress-wrap">
+    <div class="progress-label">
+      <span>Progression globale</span>
+      <span id="progress-pct">0 %</span>
+    </div>
+    <div class="progress-bar"><div class="progress-fill" id="progress-fill" style="width:0%"></div></div>
+  </div>
+
+  <div class="lotus">
+    <svg viewBox="0 0 60 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M30 4C30 4 22 14 22 24C22 30 25.5 34 30 34C34.5 34 38 30 38 24C38 14 30 4 30 4Z" stroke="var(--gold)" stroke-width="0.8" fill="none"/>
+      <path d="M30 12C30 12 18 18 14 26C12 30 14 34 18 34C22 34 26 30 28 24" stroke="var(--gold)" stroke-width="0.6" fill="none" opacity=".6"/>
+      <path d="M30 12C30 12 42 18 46 26C48 30 46 34 42 34C38 34 34 30 32 24" stroke="var(--gold)" stroke-width="0.6" fill="none" opacity=".6"/>
+      <path d="M30 18C30 18 12 20 6 28C4 32 6 36 10 36C16 36 24 30 28 24" stroke="var(--gold)" stroke-width="0.4" fill="none" opacity=".35"/>
+      <path d="M30 18C30 18 48 20 54 28C56 32 54 36 50 36C44 36 36 30 32 24" stroke="var(--gold)" stroke-width="0.4" fill="none" opacity=".35"/>
+    </svg>
+  </div>
+
+  <div class="search-wrap">
+    <svg class="search-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+      <circle cx="8.5" cy="8.5" r="5.5"/><path d="M13 13l3.5 3.5" stroke-linecap="round"/>
+    </svg>
+    <input type="search" class="search-input" id="searchInput"
+      placeholder="Rechercher une tâche… (/ pour activer)"
+      autocomplete="off" spellcheck="false" aria-label="Rechercher">
+    <button class="search-clear" id="searchClear" aria-label="Effacer">×</button>
+  </div>
+
+  <div class="filters" id="filtersContainer" role="group" aria-label="Filtres">
+    <button class="filter-btn active" data-filter="all">Tout <span class="filter-count" id="count-all">0</span></button>
+    <button class="filter-btn" data-filter="urgent">Urgent <span class="filter-count" id="count-urgent">0</span></button>
+    <button class="filter-btn" data-filter="bloc2">Bloc 2 <span class="filter-count" id="count-bloc2">0</span></button>
+    <button class="filter-btn" data-filter="bloc3">Bloc 3 <span class="filter-count" id="count-bloc3">0</span></button>
+    <button class="filter-btn" data-filter="ads">Pubs <span class="filter-count" id="count-ads">0</span></button>
+    <button class="filter-btn" data-filter="ai">IA <span class="filter-count" id="count-ai">0</span></button>
+    <button class="filter-btn" data-filter="new">Nouveau <span class="filter-count" id="count-new">0</span></button>
+  </div>
+
+  <div class="kbd-hints" aria-hidden="true">
+    <span class="kbd-item"><kbd>/</kbd> rechercher</span>
+    <span class="kbd-item"><kbd>T</kbd> thème</span>
+    <span class="kbd-item"><kbd>Esc</kbd> effacer</span>
+  </div>
+
+  <div id="task-container"></div>
+
+  <footer class="footer">
+    <p><span>Imagine Agency</span> — Propulsé par l'intelligence artificielle</p>
+  </footer>
+
+</div>
+
+<script>
+const state = { filter:'all', search:'', collapsed:new Set() };
+
+const SECTIONS = [
+  { id:'s1', section:"Cette fin de semaine — Critique", color:"#C45A4A", tasks:[
+    { id:1, title:"Chatbot franchisés — Recherche architecture Google", desc:"Priorité #1 de Melody. Rechercher comment construire un chatbot sur l'intranet franchisé, séparé du chatbot client. Doit rester dans l'écosystème Google. Interface sécurisée par mot de passe. Les franchisés doivent pouvoir poser des questions au lieu de fouiller dans 3 pages d'explications.", tags:["urgent","bloc2","ai"], done:false },
+    { id:2, title:"Plateforme communication franchisés — Architecture", desc:"Concevoir une plateforme Google-native avec : votes, discussions modérées, auto-modération (mots-clés → silence 24h), notifications, suppression possible par Melody. Doit remplacer le groupe Messenger toxique. Accessible sur téléphone. Interface belle et uniforme sans besoin de designer.", tags:["urgent","bloc3","new"], done:false },
+    { id:3, title:"NotebookLM — Podcast IA hebdomadaire franchisés", desc:"Configurer Google NotebookLM pour générer un podcast audio interactif chaque semaine. Il collecte les infos de la semaine, génère un podcast que les franchisés écoutent sur leur téléphone et peuvent poser des questions en interaction. Melody veut une « Radio Idolem ».", tags:["urgent","ai","new"], done:false },
+    { id:4, title:"Catalogue vêtements — Générer avec branding Idolem", desc:"Melody envoie le PowerPoint nettoyé (moitié du stock enlevé). Appliquer le branding Idolem, mettre les photos de Melody sur les vêtements avec l'IA, coefficient prix ×2.00475 (afficher seulement le prix retail, pas le base price). Logo Idolem uniquement (pas Academy / Yoga Show). Style « Loungewear ».", tags:["urgent","ai"], done:false },
+    { id:5, title:"Outil catalogue réutilisable — Construire le pipeline", desc:"Créer un outil permanent : déposer le PowerPoint fournisseur → génération automatique du catalogue brandé Idolem. Enregistrer le processus pour que ce soit « drop and go » à chaque fois (10–15x par an). Inclure la multiplication du coefficient automatiquement.", tags:["urgent","ai","new"], done:false },
+  ]},
+  { id:'s2', section:"Cette semaine — Haute priorité", color:"#D7A461", tasks:[
+    { id:6, title:"Recherche IA pubs — Scripts pour tournage du 11 avril", desc:"Les agents IA font une recherche de marché de toute la compétition hot yoga. Trouver les 5 meilleures pubs performantes du marché. Créer des scripts/structures pour le tournage du 11 avril. Envoyer bien avant le 11. Besoin de vidéos avec une personne qui parle et interagit.", tags:["ads","ai"], done:false },
+    { id:7, title:"Mise à jour liens funnels — formation.yoga.com + Évasion", desc:"Idolem a séparé les sites : Académie = formation.yoga.com (PAS formation en anglais). Évasion a aussi un nouveau lien. Mettre à jour les liens dans les funnels d'inscription et les pages de remerciement. Le lien « en savoir plus » redirige encore vers l'ancien site → erreur.", tags:["bloc2","retainer"], done:false },
+    { id:8, title:"Campagne pub Formation Virtuelle (YTC en ligne)", desc:"Préparer et envoyer les visuels pour la formation en ligne YTC 250. Les visuels avaient été envoyés à Maud mais sans retour. Renvoyer à Juliette + Melody en CC. Peaufiner le funnel formation en ligne. Lancer la campagne dès validation reçue. Note : bug sur le lien d'achat 2 990 $ (l'utilisateur doit créer un compte avant d'accéder).", tags:["ads","bloc2"], done:false },
+    { id:9, title:"GHL — Notifications leads → evasion@idolem.com", desc:"Modifier les notifications GHL : enlever Véronique, Caroline Gagnon, Juliette. Mettre evasion@idolem.com comme destinataire principal. Ajouter melody@idolem.com en CC. Valable pour Académie ET Évasion.", tags:["ghl","retainer"], done:false },
+    { id:10, title:"GHL — Créer utilisateur Maya (evasion@idolem.com)", desc:"Créer le compte utilisateur pour Maya dans GoHighLevel. Courriel : evasion@idolem.com. Elle sera la personne principale pour les rappels de leads. L'accès agence a été activé (permissions user management).", tags:["ghl","retainer"], done:false },
+    { id:11, title:"Demander l'API B-Sport à Maud", desc:"Melody envoie la demande à Maud lundi. On recevra l'API B-Sport pour construire un dashboard BI personnalisé avec Claude (remplace le besoin d'un spécialiste Power BI). L'API contient toutes les données : achats, abonnements, essais gratuits, crédits non utilisés, etc.", tags:["ai","new"], done:false },
+    { id:12, title:"Claudette — Agent IA designer sur WhatsApp", desc:"Melody veut surprendre son équipe avec un « nouveau designer ». Mettre en place un agent IA design sur WhatsApp qui reçoit les demandes, produit les visuels, demande du feedback, et livre. Secret — personne ne doit savoir que c'est de l'IA. Son anniversaire est mardi !", tags:["ai","new"], done:false },
+  ]},
+  { id:'s3', section:"Prochaines 2 semaines — Livrables Bloc 2", color:"#9A85C4", tasks:[
+    { id:13, title:"Chatbot IA multicanal — Site + Réseaux sociaux", desc:"Déployer le chatbot IA sur le site idlm.com (bulle en bas à droite) et sur les réseaux sociaux. Séparer complètement du chatbot franchisés (intranet). Le chatbot client doit aider les prospects, répondre aux questions sur les cours, retraites, formations.", tags:["bloc2","ai"], done:false },
+    { id:14, title:"Chatbot franchisés — Déploiement intranet", desc:"Après la recherche de la fin de semaine : déployer le chatbot sur l'intranet franchisé. Nourri avec toute la documentation interne. Notifications si aucune réponse trouvée. Page séparée, pas accessible par le public. Sécurisé par mot de passe.", tags:["bloc2","ai"], done:false },
+    { id:15, title:"API B-Sport → Dashboard BI personnalisé avec Claude", desc:"Connecter l'API B-Sport à Claude. Créer une plateforme de visualisation de données sur mesure (remplace Power BI). Interface simple, exactement les métriques nécessaires. Possibilité d'ajouter un chatbot pour interroger les données. Inclure : achats, abonnements, géolocalisation, crédits.", tags:["ai","new"], done:false },
+    { id:16, title:"Brevo × B-Sport — Connexion API infolettres", desc:"Actuellement import manuel des données dans Brevo. Connecter via API (Zapier/Make si nécessaire). Données nécessaires : nom, prénom, localité, achats (essai gratuit, abonnement, expiration, crédits non utilisés). Brevo gère 1M courriels/mois avec un taux d'ouverture de 30–40 %.", tags:["ai","new"], done:false },
+    { id:17, title:"Machine à leads — Pipelines & scripts d'appels", desc:"Optimiser le processus de suivi des leads dans GHL. Scripts pour les appels (Maya). Calendriers de rendez-vous. Distribution des leads par succursale. Les leads « newsletter » (anciens clients revenus) sont prioritaires car déjà chauds.", tags:["bloc2","ghl"], done:false },
+  ]},
+  { id:'s4', section:"Prochain mois — Portée élargie", color:"#6B8EBF", tasks:[
+    { id:18, title:"Clones IA Melody & Sarah — ElevenLabs", desc:"Les franchisés regrettent Melody et Sarah qui leur parlaient directement. ElevenLabs est déjà paramétré. Créer des clones vocaux sur une interface pour que les franchisés puissent « parler » à Melody/Sarah via IA. Intégrer au chatbot ou à la plateforme franchise.", tags:["bloc3","ai"], done:false },
+    { id:19, title:"Boutique en ligne interne — Commandes vêtements", desc:"Remplacer le processus actuel (crayon + fichier Excel + erreurs de référence × 40 succursales). Site interactif sécurisé : cliquer sur le modèle, choisir couleur/quantité, le bon de commande se génère automatiquement. La comptable envoie la facture. Possibilité future : Stripe + Kumba.", tags:["new"], done:false },
+    { id:20, title:"Plateforme franchisés — Interface complète Google-native", desc:"Interface belle et unifiée pour les franchisés : actualités, votes, discussions, chatbot, podcast, documents. Tout dans l'écosystème Google. Accessible sur téléphone. Auto-modération. Remplace l'intranet actuel (trop de texte, pas intuitif, pas joli).", tags:["bloc3","new"], done:false },
+    { id:21, title:"Google Drive contenu — Vidéos & témoignages", desc:"Melody met en place un Google Drive partagé avec toutes les vidéos tournées (pubs + médias sociaux). Donner accès à l'agence pour piocher les meilleures. Prioriser : vidéos avec des personnes qui parlent et interagissent. Inclure les témoignages vidéo — c'est de l'or !", tags:["ads"], done:false },
+    { id:22, title:"Accès formation YTC 250h — Extraits pour pubs", desc:"Melody crée un accès à la plateforme Passion (200h de contenu vidéo). Extraire des morceaux pertinents pour les pubs. Le contenu de la formation est une mine d'or pour le marketing.", tags:["ads","ai"], done:false },
+  ]},
+];
+
+const TAG_MAP = {
+  urgent:{cls:'tag-urgent',label:'Urgent'}, bloc2:{cls:'tag-bloc2',label:'Bloc 2'},
+  bloc3:{cls:'tag-bloc3',label:'Bloc 3'}, ads:{cls:'tag-ads',label:'Pubs'},
+  ai:{cls:'tag-ai',label:'IA'}, ghl:{cls:'tag-ghl',label:'GHL'},
+  new:{cls:'tag-new',label:'Nouveau'}, retainer:{cls:'tag-retainer',label:'Retainer'},
+};
+
+function allTasks() { return SECTIONS.flatMap(s => s.tasks); }
+function taskMatches(t) {
+  const fOk = state.filter === 'all' || t.tags.includes(state.filter);
+  if (!fOk) return false;
+  if (!state.search) return true;
+  const q = state.search.toLowerCase();
+  return t.title.toLowerCase().includes(q) || t.desc.toLowerCase().includes(q);
+}
+
+function render() {
+  const container = document.getElementById('task-container');
+  container.innerHTML = '';
+  let total = 0;
+  SECTIONS.forEach((sec, si) => {
+    const filtered = sec.tasks.filter(taskMatches);
+    if (!filtered.length) return;
+    total += filtered.length;
+    const donePct = Math.round(filtered.filter(t => t.done).length / filtered.length * 100);
+    const collapsed = state.collapsed.has(sec.id);
+    const sEl = document.createElement('div');
+    sEl.className = 'section' + (collapsed ? ' collapsed' : '');
+    sEl.dataset.sid = sec.id;
+    sEl.style.animationDelay = `${si * .06}s`;
+    sEl.innerHTML = `
+      <div class="section-header" data-sid="${sec.id}">
+        <div class="section-dot" style="color:${sec.color};background:${sec.color}"></div>
+        <div class="section-title">${sec.section}</div>
+        <div class="section-mini-progress"><div class="section-mini-fill" style="width:${donePct}%;background:${sec.color}"></div></div>
+        <div class="section-count">${filtered.length} tâche${filtered.length>1?'s':''}</div>
+        <div class="section-chevron">▼</div>
+      </div>
+      <div class="task-list"></div>`;
+    container.appendChild(sEl);
+    const list = sEl.querySelector('.task-list');
+    filtered.forEach((task, ti) => {
+      const el = document.createElement('div');
+      el.className = 'task' + (task.done ? ' completed' : '');
+      el.dataset.tid = task.id;
+      el.style.animationDelay = `${si*.06+ti*.04}s`;
+      el.innerHTML = `<div class="task-top">
+        <div class="task-check ${task.done?'checked':''}" data-cid="${task.id}" role="checkbox" aria-checked="${task.done}" tabindex="0" aria-label="Marquer comme terminé">
+          <svg class="check-icon" width="11" height="11" viewBox="0 0 11 11" fill="none" aria-hidden="true"><path d="M2 5.5L4.5 8L9 3" stroke="var(--check-done-text)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <div class="task-info">
+          <div class="task-title">${task.title}</div>
+          <div class="task-desc">${task.desc}</div>
+          <div class="task-tags">${task.tags.map(t=>{const c=TAG_MAP[t]||{cls:'',label:t};return`<span class="tag ${c.cls}">${c.label}</span>`;}).join('')}</div>
+        </div>
+        <div class="task-arrow" aria-hidden="true">▶</div>
+      </div>`;
+      list.appendChild(el);
+    });
+  });
+  if (!total) {
+    container.innerHTML = `<div class="empty-state"><div class="empty-icon">◇</div><p>Aucune tâche pour <strong>"${state.search||state.filter}"</strong></p></div>`;
+  }
+  updateProgress(); updateCounts();
+}
+
+function updateProgress() {
+  const all = allTasks(), done = all.filter(t=>t.done).length;
+  const pct = Math.round(done/all.length*100);
+  document.getElementById('progress-pct').textContent = pct+' %';
+  document.getElementById('progress-fill').style.width = pct+'%';
+}
+
+function updateCounts() {
+  ['all','urgent','bloc2','bloc3','ads','ai','new'].forEach(f => {
+    const el = document.getElementById('count-'+f);
+    if (el) el.textContent = allTasks().filter(t => {
+      const fOk = f==='all'||t.tags.includes(f);
+      if (!fOk) return false;
+      if (!state.search) return true;
+      const q = state.search.toLowerCase();
+      return t.title.toLowerCase().includes(q)||t.desc.toLowerCase().includes(q);
+    }).length;
+  });
+}
+
+document.getElementById('task-container').addEventListener('click', e => {
+  const check = e.target.closest('[data-cid]');
+  if (check) { e.stopPropagation(); const id=+check.dataset.cid; allTasks().forEach(t=>{if(t.id===id)t.done=!t.done;}); persist(); render(); return; }
+  const sh = e.target.closest('.section-header');
+  if (sh) { const sid=sh.dataset.sid; state.collapsed.has(sid)?state.collapsed.delete(sid):state.collapsed.add(sid); render(); return; }
+  const task = e.target.closest('.task');
+  if (task) task.classList.toggle('expanded');
+});
+
+document.getElementById('task-container').addEventListener('keydown', e => {
+  if (e.key==='Enter'||e.key===' ') { const c=e.target.closest('[data-cid]'); if(c){e.preventDefault();c.click();} }
+});
+
+document.getElementById('filtersContainer').addEventListener('click', e => {
+  const btn = e.target.closest('.filter-btn');
+  if (!btn) return;
+  document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active'); state.filter=btn.dataset.filter; render();
+});
+
+const searchInput = document.getElementById('searchInput');
+const searchClear = document.getElementById('searchClear');
+searchInput.addEventListener('input', () => {
+  state.search = searchInput.value.trim();
+  searchClear.classList.toggle('visible', state.search.length>0); render();
+});
+searchClear.addEventListener('click', () => {
+  searchInput.value=''; state.search=''; searchClear.classList.remove('visible'); searchInput.focus(); render();
+});
+
+document.addEventListener('keydown', e => {
+  const typing = document.activeElement===searchInput;
+  if (e.key==='/'&&!typing) { e.preventDefault(); searchInput.focus(); searchInput.select(); return; }
+  if (e.key==='Escape'&&typing) { searchInput.blur(); if(state.search){searchInput.value='';state.search='';searchClear.classList.remove('visible');render();} return; }
+  if ((e.key==='t'||e.key==='T')&&!typing) { setTheme(document.documentElement.getAttribute('data-theme')==='dark'?'light':'dark'); }
+});
+
+function setTheme(t) { document.documentElement.setAttribute('data-theme',t); try{localStorage.setItem('idolem_theme',t);}catch(e){} }
+document.getElementById('themeToggle').addEventListener('click', () => { setTheme(document.documentElement.getAttribute('data-theme')==='dark'?'light':'dark'); });
+try { const t=localStorage.getItem('idolem_theme'); if(t) setTheme(t); } catch(e) {}
+
+window.addEventListener('scroll', () => {
+  const d=document.documentElement, pct=d.scrollHeight-d.clientHeight>0?(d.scrollTop/(d.scrollHeight-d.clientHeight))*100:0;
+  document.getElementById('scrollProgress').style.width=pct+'%';
+}, {passive:true});
+
+function persist() { const s={}; allTasks().forEach(t=>{s[t.id]=t.done;}); try{localStorage.setItem('idolem_tasks_v3',JSON.stringify(s));}catch(e){} }
+function hydrate() { try{const s=JSON.parse(localStorage.getItem('idolem_tasks_v3')); if(s) allTasks().forEach(t=>{if(s[t.id]!==undefined)t.done=s[t.id];});}catch(e){} }
+
+hydrate(); render();
+</script>
+</body>
+</html>
