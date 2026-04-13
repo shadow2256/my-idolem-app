@@ -369,7 +369,7 @@ kbd {
   <header class="header">
     <div>
       <div class="logo-text">Imagine <span>×</span> Idolem</div>
-      <div class="logo-sub">Centre de commande — Post-réunion 27 mars 2026</div>
+      <div class="logo-sub">Centre de commande — Mis à jour 13 avril 2026</div>
     </div>
     <div class="header-right">
       <button class="theme-toggle" id="themeToggle" aria-label="Changer de thème" title="Thème (T)">
@@ -383,12 +383,12 @@ kbd {
   </header>
 
   <div class="tldr">
-    <div class="tldr-title">Résumé exécutif — Mis à jour</div>
-    <p><strong>🔴 ULTRA PRIORITÉ — Boutique + Power BI :</strong> Melody a confirmé que la boutique vêtements en ligne (commande autonome pour les 40 franchisés) et le dashboard BI sont les priorités absolues, avant même les chatbots. Youssef peut contacter Maud directement — elle est très réactive. Appel prévu demain 10h. Envoyer une liste de questions par email. Maud + franchisés seront les principaux utilisateurs du dashboard.</p>
-    <p><strong>Catalogue — corrections en cours :</strong> Processus en 2 phases pour respecter exactement le visage de Melody (génération → ajustement facial). Melody envoie ses photos en gros plan (tous les angles). Corrections : supprimer le texte « Idolem » redondant (garder seulement le logo propre), remplacer « Prix de détail » → <strong>« Prix »</strong> (évite la confusion sur le prix de revente), ajouter <strong>« zip doré »</strong> dans les détails de la veste spécifique. Nouveaux morceaux reçus ce matin à intégrer avec références continues.</p>
-    <p><strong>✅ Liens funnels mis à jour</strong> — formation.yoga.com + Évasion, tout est à jour incluant les courriels automatiques.</p>
-    <p><strong>GHL → Brevo :</strong> Connecter automatiquement les leads des pubs à la base Brevo — plus de saisie manuelle de 2 semaines. Clone IA Mélodie sur <strong>WhatsApp</strong> (Facebook bloque certaines intégrations Claude). Phase 1 : chat. Phase 2 : voix ElevenLabs. Règles : photo, logo, intervalles de réponse. Melody veut aussi son propre projet Claude pour son AI franchisé.</p>
-    <p><strong>Outil recommandé :</strong> <strong>Plaud</strong> (~250$) — petit enregistreur magnétique connecté à Claude qui capture toutes les conversations en temps réel.</p>
+    <div class="tldr-title">Résumé exécutif — 13 avril 2026</div>
+    <p><strong>🔴 URGENCES CONFIRMÉES PAR MELODY :</strong> (1) <strong>Power BI / Dashboard BI</strong> — interface sur mesure avec API B-Sport, questions envoyées à Maud. (2) <strong>Designer sur WhatsApp</strong> — clone IA Mélodie, phase chat d'abord, voix ElevenLabs ensuite. (3) <strong>Intranet AI / Chat franchisé</strong> — architecture Google recherchée ✅. Boutique déplacée au Bloc 3 avec couche IA.</p>
+    <p><strong>✅ Complétés cette semaine :</strong> Recherche archi chatbot franchisé · Corrections catalogue + visage Melody · Photos Melody reçues · Scripts tournage 11 avril · Mise à jour liens funnels · Campagne YTC en ligne · GHL notifications leads → Maya · GHL compte Maya créé · Questions Power BI envoyées à Maud.</p>
+    <p><strong>Nouvelle structure Bloc 2 (15 000 $ — actif) :</strong> 2A = Power BI + API B-Sport + collaboration spécialiste. 2B = Designer WhatsApp + Intranet AI + chat franchisé + GHL→Brevo + machine à leads.</p>
+    <p><strong>Bloc 3 (15 000 $ — prochain) :</strong> Boutique franchisés en ligne (commandes autonomes × 40 succursales) + Voice AI ElevenLabs + Reconnaissance faciale/avatar + couche IA avancée sur tout ce qui aura été mis en place.</p>
+    <p><strong>Extra facturé séparément :</strong> Catalogue merch Idolem — <strong>600 $ HT</strong>. Outil catalogue réutilisable (pipeline Claude automatisé) en cours de développement.</p>
   </div>
 
   <div class="contract-bar">
@@ -399,16 +399,16 @@ kbd {
       <div class="bloc-status">Complété</div>
     </div>
     <div class="bloc-card active">
-      <div class="bloc-label">Bloc 2 — Chatbot + Machine à leads</div>
-      <div class="bloc-title">Chatbot IA, CRM, Pipelines</div>
+      <div class="bloc-label">Bloc 2 — Data + Designer WhatsApp + Intranet AI</div>
+      <div class="bloc-title">Power BI, Clone WhatsApp, Chat franchisé</div>
       <div class="bloc-price">15 000 $</div>
       <div class="bloc-status">En cours</div>
     </div>
     <div class="bloc-card pending">
-      <div class="bloc-label">Bloc 3 — Intranet IA + Voice AI</div>
-      <div class="bloc-title">Reco faciale, Knowledge Hub</div>
+      <div class="bloc-label">Bloc 3 — Boutique + AI Layer avancé</div>
+      <div class="bloc-title">Boutique franchisés, Voice AI, Reco faciale</div>
       <div class="bloc-price">15 000 $</div>
-      <div class="bloc-status">Optionnel</div>
+      <div class="bloc-status">Prochain</div>
     </div>
     <div class="bloc-card retainer">
       <div class="bloc-label">Retainer mensuel</div>
@@ -500,22 +500,22 @@ const state = { filter:'all', search:'', collapsed:new Set() };
 
 const SECTIONS = [
   { id:'s1', section:"Cette fin de semaine — Critique", color:"#C45A4A", tasks:[
-    { id:1, title:"Chatbot franchisés — Recherche architecture Google", desc:"Priorité #1 de Melody. Rechercher comment construire un chatbot sur l'intranet franchisé, séparé du chatbot client. Doit rester dans l'écosystème Google. Interface sécurisée par mot de passe. Les franchisés doivent pouvoir poser des questions au lieu de fouiller dans 3 pages d'explications.", tags:["urgent","bloc2","ai"], done:false },
+    { id:1, title:"Chatbot franchisés — Recherche architecture Google", desc:"Priorité #1 de Melody. Rechercher comment construire un chatbot sur l'intranet franchisé, séparé du chatbot client. Doit rester dans l'écosystème Google. Interface sécurisée par mot de passe. Les franchisés doivent pouvoir poser des questions au lieu de fouiller dans 3 pages d'explications.", tags:["urgent","bloc2","ai"], done:true },
     { id:2, title:"Plateforme communication franchisés — Architecture", desc:"Concevoir une plateforme Google-native avec : votes, discussions modérées, auto-modération (mots-clés → silence 24h), notifications, suppression possible par Melody. Doit remplacer le groupe Messenger toxique. Accessible sur téléphone. Interface belle et uniforme sans besoin de designer.", tags:["urgent","bloc3","new"], done:false },
     { id:3, title:"NotebookLM — Podcast IA hebdomadaire franchisés", desc:"Configurer Google NotebookLM pour générer un podcast audio interactif chaque semaine. Il collecte les infos de la semaine, génère un podcast que les franchisés écoutent sur leur téléphone et peuvent poser des questions en interaction. Melody veut une « Radio Idolem ».", tags:["urgent","ai","new"], done:false },
-    { id:4, title:"Catalogue vêtements — Corrections + Visage Melody", desc:"CORRECTIONS SUITE À L'APPEL : (1) VISAGE : processus en 2 phases — génération d'abord, puis ajustement facial pour que ce soit EXACTEMENT Melody (pas une approximation IA). (2) Supprimer le texte 'Idolem' redondant partout sauf le logo propre (ex. slide 26 / ref '0 10' : logo OK en haut à gauche, mais texte Idolem à droite à enlever). (3) Changer 'Prix de détail' → 'Prix' (évite confusion sur prix de revente). (4) Ajouter 'zip doré' dans les détails de la veste spécifique. (5) Nouveaux morceaux reçus ce matin : intégrer avec références continues selon la logique initiale. Coefficient ×2.00475, logo Idolem uniquement, style Loungewear.", tags:["urgent","ai"], done:false },
+    { id:4, title:"Catalogue vêtements — Corrections + Visage Melody", desc:"CORRECTIONS SUITE À L'APPEL : (1) VISAGE : processus en 2 phases — génération d'abord, puis ajustement facial pour que ce soit EXACTEMENT Melody (pas une approximation IA). (2) Supprimer le texte 'Idolem' redondant partout sauf le logo propre (ex. slide 26 / ref '0 10' : logo OK en haut à gauche, mais texte Idolem à droite à enlever). (3) Changer 'Prix de détail' → 'Prix' (évite confusion sur prix de revente). (4) Ajouter 'zip doré' dans les détails de la veste spécifique. (5) Nouveaux morceaux reçus ce matin : intégrer avec références continues selon la logique initiale. Coefficient ×2.00475, logo Idolem uniquement, style Loungewear.", tags:["urgent","ai"], done:true },
     { id:5, title:"Outil catalogue réutilisable — Pipeline automatisé avec Claude", desc:"En cours de développement. Premier catalogue : ~1h30-2h (paramétrage initial + travail manuel slide par slide). Objectif : automatiser tout le processus avec Claude pour un 'drop and go' à chaque fois (10–15x par an). Inclure : coefficient ×2.00475 automatique + phase d'ajustement facial Melody.", tags:["urgent","ai","new"], done:false },
-    { id:23, title:"Photos Melody — Gros plans tous angles pour catalogue", desc:"Melody a énormément de photos d'elle. Lui demander d'envoyer : gros plans de face, profil, ¾, tous les angles possibles. Ces photos servent de référence pour la phase 2 d'ajustement facial du catalogue afin que le visage soit EXACTEMENT celui de Melody. Idéalement : fond neutre, bonne lumière, haute résolution.", tags:["urgent","ai","new"], done:false },
+    { id:23, title:"Photos Melody — Gros plans tous angles pour catalogue", desc:"Melody a énormément de photos d'elle. Lui demander d'envoyer : gros plans de face, profil, ¾, tous les angles possibles. Ces photos servent de référence pour la phase 2 d'ajustement facial du catalogue afin que le visage soit EXACTEMENT celui de Melody. Idéalement : fond neutre, bonne lumière, haute résolution.", tags:["urgent","ai","new"], done:true },
   ]},
   { id:'s2', section:"Cette semaine — Haute priorité", color:"#D7A461", tasks:[
-    { id:6, title:"Recherche IA pubs — Scripts pour tournage du 11 avril", desc:"Les agents IA font une recherche de marché de toute la compétition hot yoga. Trouver les 5 meilleures pubs performantes du marché. Créer des scripts/structures pour le tournage du 11 avril. Envoyer bien avant le 11. Besoin de vidéos avec une personne qui parle et interagit.", tags:["ads","ai"], done:false },
+    { id:6, title:"Recherche IA pubs — Scripts pour tournage du 11 avril", desc:"Les agents IA font une recherche de marché de toute la compétition hot yoga. Trouver les 5 meilleures pubs performantes du marché. Créer des scripts/structures pour le tournage du 11 avril. Envoyer bien avant le 11. Besoin de vidéos avec une personne qui parle et interagit.", tags:["ads","ai"], done:true },
     { id:7, title:"✅ Mise à jour liens funnels — formation.yoga.com + Évasion", desc:"COMPLÉTÉ. Idolem a séparé les sites : Académie = formation.yoga.com. Évasion a aussi un nouveau lien. Tous les liens dans les funnels d'inscription, pages de remerciement et courriels automatiques sont à jour.", tags:["bloc2","retainer"], done:true },
-    { id:8, title:"Campagne pub Formation Virtuelle (YTC en ligne)", desc:"Préparer et envoyer les visuels pour la formation en ligne YTC 250. Les visuels avaient été envoyés à Maud mais sans retour. Renvoyer à Juliette + Melody en CC. Peaufiner le funnel formation en ligne. Lancer la campagne dès validation reçue. Note : bug sur le lien d'achat 2 990 $ (l'utilisateur doit créer un compte avant d'accéder).", tags:["ads","bloc2"], done:false },
-    { id:9, title:"GHL — Notifications leads → evasion@idolem.com", desc:"Modifier les notifications GHL : enlever Véronique, Caroline Gagnon, Juliette. Mettre evasion@idolem.com comme destinataire principal. Ajouter melody@idolem.com en CC. Valable pour Académie ET Évasion.", tags:["ghl","retainer"], done:false },
-    { id:10, title:"GHL — Créer utilisateur Maya (evasion@idolem.com)", desc:"Créer le compte utilisateur pour Maya dans GoHighLevel. Courriel : evasion@idolem.com. Elle sera la personne principale pour les rappels de leads. L'accès agence a été activé (permissions user management).", tags:["ghl","retainer"], done:false },
+    { id:8, title:"Campagne pub Formation Virtuelle (YTC en ligne)", desc:"Préparer et envoyer les visuels pour la formation en ligne YTC 250. Les visuels avaient été envoyés à Maud mais sans retour. Renvoyer à Juliette + Melody en CC. Peaufiner le funnel formation en ligne. Lancer la campagne dès validation reçue. Note : bug sur le lien d'achat 2 990 $ (l'utilisateur doit créer un compte avant d'accéder).", tags:["ads","bloc2"], done:true },
+    { id:9, title:"GHL — Notifications leads → evasion@idolem.com", desc:"Modifier les notifications GHL : enlever Véronique, Caroline Gagnon, Juliette. Mettre evasion@idolem.com comme destinataire principal. Ajouter melody@idolem.com en CC. Valable pour Académie ET Évasion.", tags:["ghl","retainer"], done:true },
+    { id:10, title:"GHL — Créer utilisateur Maya (evasion@idolem.com)", desc:"Créer le compte utilisateur pour Maya dans GoHighLevel. Courriel : evasion@idolem.com. Elle sera la personne principale pour les rappels de leads. L'accès agence a été activé (permissions user management).", tags:["ghl","retainer"], done:true },
     { id:11, title:"API B-Sport — Contacter Maud directement", desc:"Melody a confirmé : Youssef peut aller directement avec Maud. Maud est très réactive. Appel déjà prévu demain 10h. Envoyer une liste de questions par email avant. Maud + franchisés seront les principaux utilisateurs du dashboard BI. Elle donnera les détails exacts des métriques dont elle a besoin.", tags:["ai","new"], done:false },
     { id:12, title:"Clone IA Mélodie — WhatsApp (chat puis voix ElevenLabs)", desc:"WhatsApp est la meilleure plateforme (Facebook bloque certaines intégrations Claude). Règles à respecter pour ne pas alerter l'algorithme : photo de profil, logo de l'application API, intervalles de réponse pas trop rapides. Phase 1 : agent en chat. Phase 2 : voix ElevenLabs une fois le chat validé A+. Melody peut aussi créer un vrai profil Instagram/Facebook en parallèle (règles simples à respecter).", tags:["ai","new"], done:false },
-    { id:24, title:"Envoyer liste de questions à Maud — Power BI", desc:"Préparer et envoyer à Maud une liste de questions détaillées sur ses besoins pour le dashboard BI : quelles métriques, quelle fréquence de consultation, quels accès pour les franchisés, formats préférés. Maud est très précise — lui laisser le temps de réfléchir par écrit. Dashboard final franchisés avec limites à définir.", tags:["ai","new"], done:false },
+    { id:24, title:"Envoyer liste de questions à Maud — Power BI", desc:"Préparer et envoyer à Maud une liste de questions détaillées sur ses besoins pour le dashboard BI : quelles métriques, quelle fréquence de consultation, quels accès pour les franchisés, formats préférés. Maud est très précise — lui laisser le temps de réfléchir par écrit. Dashboard final franchisés avec limites à définir.", tags:["ai","new"], done:true },
     { id:25, title:"Projet Claude personnel — AI Franchisé Mélodie", desc:"Melody veut créer son propre projet Claude pour développer son persona AI franchisé. Instructions : créer un nouveau projet Claude, y déposer toutes les inspirations (visuels, textes, idées), demander à Claude de poser des questions pour se mettre en contexte. Melody peut nourrir l'IA de toutes ses conversations, idées, réflexions. L'IA sera ensuite utilisée comme base pour le clone IA Mélodie.", tags:["ai","new"], done:false },
   ]},
   { id:'s3', section:"ULTRA PRIORITÉ — Boutique + Dashboard BI", color:"#C87E2A", tasks:[
